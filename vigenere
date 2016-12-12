@@ -1,0 +1,112 @@
+#include <cs50.h> //Provides string data structure
+#include <stdio.h>
+#include <string.h> // Provides strlen() functions
+#include <ctype.h> // Provides isspace() function
+
+void encrypt(string p);
+void caesar(int k, char message);
+
+int main(int argc, string argv[])
+{
+    //insures only one argument is key
+    if(argc != 2)
+    {
+        printf("Please enter a word in the command line as such './caesar word' where word is your key\n");
+        return 1;
+    }
+    
+    //qualifies input is only alpha numeric
+    for(int i = 0; i < strlen(argv[1]); i++)
+    {
+        char char_argv = argv[1][i];
+        int int_argv = (int) char_argv;
+        if(int_argv < 65 || (int_argv > 90 && int_argv < 97) || int_argv > 122)
+        {
+            printf("Please only enter letters for your key\n");
+            return 1;
+        }
+    }
+    encrypt(argv[1]);
+}
+
+/*Runs a for loop that sets the key to 0-25 then a second
+for loop that checks over if each letter is a alphanumeric character
+if so it encodes it using the key. If it is not alphanumeric the program
+just spits out what ws there so spaces, and punctuation don't get encoded*/
+void encrypt(string p)
+{
+    string key = p;
+    string message = GetString();
+    int int_key[strlen(key)];
+    
+    //loop that takes the key, ensures it's all lowercase and will shift the message 0-25 characters
+    for(int i = 0; i < strlen(key); i++)
+    {
+        key[i] = (char) tolower(key[i]);
+        int ascii_code = (int) key[i];
+        int_key[i] = ascii_code - 97;
+    }
+    //checks to make sure alphanumeric letters are the only 
+    //thing that shift the key, so punctuation doesn't effect
+    //the key words shifting.
+    for(int i = 0, j = 0; i < strlen(message); i++)
+    {
+        int isletter = (int) message[i];
+        //allows the key words to by cycled
+        if(j >= strlen(key))
+        {
+            j = 0 ;
+        }
+        //if the character is alpha numeric adds an increment to j to allow for cycling
+        if((isletter >= 65 && isletter <= 90) || (isletter >= 97 && isletter <=122))
+        {
+            caesar(int_key[j], message[i]);
+            j++;
+        }
+        //pipes through any other characters so they're not encoded, also j is not incremented
+        else
+        {
+            printf("%c", message[i]);
+        }
+        
+    }
+    printf("\n");
+}
+
+/*takes 2 arguments the first is how far to shift,
+the second is which letter to shift*/
+
+void caesar(int shift , char message)
+{
+    //changes message to an int to become easier to compute
+    int message_letter = (int) message;
+    // coded letter changes the letter
+    int coded_letter = message_letter + shift;
+    //resets letter value everytime function is called
+    char letter = message;
+    //compares letter ascii values and ensures cycling of letters
+    if(message_letter >= 97 && message_letter <= 122)
+    {
+        if(coded_letter >= 97 && coded_letter <= 122)
+        {
+            letter = (char) coded_letter;
+        }
+        if(coded_letter >= 123)
+        {
+            letter = (char) coded_letter - 26;
+        }
+    }
+    if(message_letter >= 65 && message_letter <= 90)
+    {
+        if(coded_letter >= 65 && coded_letter <=90)
+        {
+            letter = (char) coded_letter;
+        }
+        if(coded_letter >= 91)
+        {
+            letter = (char) coded_letter - 26;
+        }
+    }
+    printf("%c", letter);
+
+}
